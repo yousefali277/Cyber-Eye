@@ -46,8 +46,8 @@ with tab1:
                         logits = outputs.logits
                         probs = F.softmax(logits, dim=-1)[0]
                     
-                    fake_score = float(probs[1].item())
-                    real_score = float(probs[0].item())
+                    fake_score = float(probs[0].item())
+                    real_score = float(probs[1].item())
                     
                     if fake_score > real_score:
                         st.error(f"🔴 تم كشف تزييف عميق (Deepfake)\n\nمستوى الخطورة: عالي (High Risk)")
