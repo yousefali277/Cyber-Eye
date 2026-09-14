@@ -33,7 +33,7 @@ with tab1:
         uploaded_file = st.file_uploader("ارفع الصورة هنا للتحليل السيبراني", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption="الصورة المرفوعة", use_column_width=True)
+            st.image(image, caption="الصورة المرفوعة", use_container_width=True)
             
     with col2:
         if uploaded_file is not None:
