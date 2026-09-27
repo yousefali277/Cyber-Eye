@@ -3,3 +3,4 @@ transformers
 torch
 timm
 pillow
+opencv-python-headless
