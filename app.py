@@ -112,7 +112,7 @@ with tab2:
                         with torch.no_grad():
                             outputs = img_model(**inputs)
                             probs = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
-                        raw_ai = float(probs[0])
+                        raw_ai = float(probs[1])
                         scores.append(calibrate_score(raw_ai))
                     count += 1
 
