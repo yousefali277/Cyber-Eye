@@ -15,7 +15,7 @@ st.markdown("<h1 style='text-align: center;'>👁️ Cyber Eye</h1>", unsafe_all
 st.markdown("<p style='text-align: center; color: gray;'>نظام كشف التزييف العميق • صور • فيديو • صوت</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-def calibrate_score(prob, strength=4.2):
+def calibrate_score(prob, strength=2.8):
     x = (prob - 0.5) * strength
     return 1.0 / (1.0 + math.exp(-x))
 
