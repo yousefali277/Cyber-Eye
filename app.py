@@ -65,7 +65,7 @@ with tab1:
 
                 # تصحيح العكس: في هذا الموديل غالباً 0 = AI ، 1 = Real
                 # لو طلع معكوس نجبره
-                raw_ai = float(probs[0])   # نفترض 0 = AI
+                raw_ai = float(probs[1])   # نفترض 0 = AI
                 calibrated = calibrate_score(raw_ai)
                 ai_prob = calibrated * 100
                 real_prob = 100 - ai_prob
