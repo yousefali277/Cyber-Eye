@@ -142,9 +142,9 @@ with tab3:
         uploaded_audio = st.file_uploader("ارفع ملف صوتي", type=["wav", "mp3", "ogg", "flac", "m4a"], key="aud")
         if uploaded_audio:
             suffix = os.path.splitext(uploaded_audio.name)[1].lower() or ".wav"
-            tfile = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-            tfile.write(uploaded_audio.read())
-            audio_path = tfile.name
+with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tfile:
+    tfile.write(uploaded_audio.getvalue())   # مهم: getvalue() مو read()
+    audio_path = tfile.name
             st.audio(uploaded_audio)
 
             if st.button("🚀 بدء تحليل الصوت", type="primary", key="btn_aud"):
