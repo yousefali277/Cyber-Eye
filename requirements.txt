@@ -1,6 +1,8 @@
 streamlit
-transformers
 torch
-timm
+transformers
 pillow
 opencv-python-headless
+librosa
+soundfile
+numpy
