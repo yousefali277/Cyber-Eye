@@ -163,9 +163,9 @@ with tab3:
                         fake_prob = float(probs[0]) * 100
                         real_prob = float(probs[1]) * 100
 
-                        if fake_prob >= 78:
+                        if fake_prob >= 75:
                             st.error("🚨 تم كشف صوت مزيف")
-                        elif fake_prob >= 58:
+                        elif fake_prob >= 55:
                             st.warning("⚠️ الصوت مشبوه")
                         else:
                             st.success("✅ الصوت حقيقي على الأرجح")
