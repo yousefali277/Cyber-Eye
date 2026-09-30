@@ -160,12 +160,12 @@ with tab3:
                             probs = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
 
                         # 0 = fake ، 1 = real
-                        fake_prob = float(probs[1]) * 100
-                        real_prob = float(probs[0]) * 100
+                        fake_prob = float(probs[0]) * 100
+                        real_prob = float(probs[1]) * 100
 
-                        if fake_prob >= 75:
+                        if fake_prob >= 70:
                             st.error("🚨 تم كشف صوت مزيف")
-                        elif fake_prob >= 55:
+                        elif fake_prob >= 50:
                             st.warning("⚠️ الصوت مشبوه")
                         else:
                             st.success("✅ الصوت حقيقي على الأرجح")
