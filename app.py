@@ -136,48 +136,53 @@ with tab2:
 # ====================== الصوت ======================
 with tab3:
     st.subheader("كشف الأصوات المزيفة")
-    if not audio_ready:
-        st.warning("موديل الصوت غير متوفر")
-    else:
-        uploaded_audio = st.file_uploader("ارفع ملف صوتي", type=["wav", "mp3", "ogg", "flac", "m4a"], key="aud")
-        
-        if uploaded_audio is not None:
-            st.audio(uploaded_audio)
-            
-            if st.button("🚀 بدء تحليل الصوت", type="primary", key="btn_aud"):
-                with st.spinner("جاري تحليل الصوت..."):
-                    try:
-                        suffix = os.path.splitext(uploaded_audio.name)[1].lower() or ".wav"
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tfile:
-                            tfile.write(uploaded_audio.getvalue())
-                            audio_path = tfile.name
+    st.caption("⚠️ النسخة الحالية تجريبية • الدقة متوسطة")
 
-                        speech, sr = librosa.load(audio_path, sr=16000, duration=30)
-                        inputs = audio_extractor(speech, sampling_rate=16000, return_tensors="pt", padding=True)
-                        
-                        with torch.no_grad():
-                            outputs = audio_model(**inputs)
-                            probs = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
+    uploaded_audio = st.file_uploader("ارفع ملف صوتي", type=["wav", "mp3", "ogg", "flac", "m4a"], key="aud")
 
-                        # 0 = fake ، 1 = real
-                        fake_prob = float(probs[0]) * 100
-                        real_prob = float(probs[1]) * 100
+    if uploaded_audio is not None:
+        st.audio(uploaded_audio)
 
-                        if fake_prob >= 70:
-                            st.error("🚨 تم كشف صوت مزيف")
-                        elif fake_prob >= 50:
-                            st.warning("⚠️ الصوت مشبوه")
-                        else:
-                            st.success("✅ الصوت حقيقي على الأرجح")
+        if st.button("🚀 بدء تحليل الصوت", type="primary", key="btn_aud"):
+            with st.spinner("جاري تحليل الصوت..."):
+                try:
+                    suffix = os.path.splitext(uploaded_audio.name)[1].lower() or ".wav"
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tfile:
+                        tfile.write(uploaded_audio.getvalue())
+                        audio_path = tfile.name
 
-                        st.metric("نسبة التزييف", f"{fake_prob:.1f}%")
-                        st.progress(fake_prob / 100)
-                        st.metric("نسبة الواقعية", f"{real_prob:.1f}%")
+                    # تحميل أفضل
+                    speech, sr = librosa.load(audio_path, sr=16000, mono=True)
+                    
+                    # لو الصوت قصير جداً نكرره عشان الموديل يشتغل أحسن
+                    if len(speech) < 16000 * 3:  # أقل من 3 ثواني
+                        speech = np.tile(speech, int(np.ceil(16000*3 / len(speech))))[:16000*3]
 
-                    except Exception as e:
-                        st.error(f"خطأ: {e}")
-                    finally:
-                        if 'audio_path' in locals() and os.path.exists(audio_path):
-                            os.unlink(audio_path)
+                    inputs = audio_extractor(speech, sampling_rate=16000, return_tensors="pt", padding=True)
+
+                    with torch.no_grad():
+                        outputs = audio_model(**inputs)
+                        probs = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
+
+                    fake_prob = float(probs[0]) * 100
+                    real_prob = float(probs[1]) * 100
+
+                    # حدود أكثر توازناً
+                    if fake_prob >= 72:
+                        st.error("🚨 تم كشف صوت مزيف")
+                    elif fake_prob >= 52:
+                        st.warning("⚠️ الصوت مشبوه")
+                    else:
+                        st.success("✅ الصوت حقيقي على الأرجح")
+
+                    st.metric("نسبة التزييف", f"{fake_prob:.1f}%")
+                    st.progress(min(fake_prob / 100, 1.0))
+                    st.metric("نسبة الواقعية", f"{real_prob:.1f}%")
+
+                except Exception as e:
+                    st.error(f"خطأ: {e}")
+                finally:
+                    if 'audio_path' in locals() and os.path.exists(audio_path):
+                        os.unlink(audio_path)
 st.markdown("---")
 st.markdown("<p style='text-align: center; color: gray;'>Cyber Eye • تطوير: يوسف المرشدي</p>", unsafe_allow_html=True)
